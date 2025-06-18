@@ -24,6 +24,14 @@
       - dnf-automatic
     state: present
 
+- name: SSH - Disallow root SSH access
+  ansible.builtin.lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: "^PermitRootLogin"
+    line: "PermitRootLogin no"
+    state: present
+  notify: Restart sshd
+
 - name: Gather package facts
   ansible.builtin.package_facts:
     manager: auto
