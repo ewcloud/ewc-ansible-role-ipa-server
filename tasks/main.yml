@@ -32,6 +32,11 @@
     state: present
   notify: Restart sshd
 
+- name: SElinux - Set permissive mode
+  ansible.posix.selinux:
+    policy: targeted
+    state: permissive
+
 - name: Gather package facts
   ansible.builtin.package_facts:
     manager: auto
