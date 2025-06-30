@@ -77,6 +77,31 @@
     state: present
   notify: Reload NetworkManager
 
+- name: Check if FreeIPA is already installed
+  ansible.builtin.stat:
+    path: /etc/ipa/default.conf
+  register: ipa_config_stat
+
+- name: Install and configure the IPA server
+  ansible.builtin.command:
+    argv:
+      - ipa-server-install
+      - --unattended
+      - --domain={{ ipa_domain }}
+      - --mkhomedir
+      - --setup-dns
+      - --auto-reverse
+      - --forwarder={{ openstack_subnet_dns_nameserver_ip_default }}
+      - --forwarder={{ openstack_subnet_dns_nameserver_ip_fallback }}
+      - --realm={{ ipa_domain | upper }}
+      - --hostname={{ ipa_server_hostname }}.{{ ipa_domain }}
+      - --ds-password={{ ipa_admin_password }}
+      - --admin-password={{ ipa_admin_password }}
+    creates: /etc/ipa/default.conf
+  when: not ipa_config_stat.stat.exists
+  register: ipa_install_result
+  failed_when: ipa_install_result.rc != 0 and 'already installed' not in ipa_install_result.stderr
+
 - name: Gather package facts
   ansible.builtin.package_facts:
     manager: auto

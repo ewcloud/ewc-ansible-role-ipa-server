@@ -2,3 +2,5 @@
 ipa_domain: null
 ipa_server_hostname: null
 ipa_admin_password: null
+openstack_subnet_dns_nameserver_ip_default: 1.1.1.1
+openstack_subnet_dns_nameserver_ip_fallback: 8.8.8.8
