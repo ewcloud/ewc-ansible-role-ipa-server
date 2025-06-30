@@ -102,6 +102,27 @@
   register: ipa_install_result
   failed_when: ipa_install_result.rc != 0 and 'already installed' not in ipa_install_result.stderr
 
+- name: Configure DNF-automatic update_type
+  ansible.builtin.lineinfile:
+    path: /etc/dnf/automatic.conf
+    regexp: "^upgrade_type"
+    line: "upgrade_type = security"
+    state: present
+
+- name: Configure DNF-automatic download_updates
+  ansible.builtin.lineinfile:
+    path: /etc/dnf/automatic.conf
+    regexp: "^download_updates"
+    line: "download_updates = yes"
+    state: present
+
+- name: Configure DNF-automatic apply_updates
+  ansible.builtin.lineinfile:
+    path: /etc/dnf/automatic.conf
+    regexp: "^apply_updates"
+    line: "apply_updates = yes"
+    state: present
+
 - name: Gather package facts
   ansible.builtin.package_facts:
     manager: auto
