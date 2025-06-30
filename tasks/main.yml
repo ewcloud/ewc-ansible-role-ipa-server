@@ -141,6 +141,82 @@
     state: stopped
     enabled: false
 
+- name: Authenticate as IPA admin with Kerberos
+  ansible.builtin.command:
+    cmd: bash -c "echo '{{ ipa_admin_password }}' | kinit admin"
+  register: kinit_result
+  failed_when: kinit_result.rc != 0
+  changed_when: false
+
+- name: Add new user-defined IPA admin
+  community.general.ipa_user:
+    uid: "{{ ipa_admin_username }}"
+    givenname: "{{ ipa_admin_givenname }}"
+    sn: "{{ ipa_admin_surname }}"
+    password: "{{ ipa_admin_password }}"
+    ipa_pass: "{{ ipa_admin_password }}"
+    ipa_host: "{{ ipa_server_hostname }}.{{ ipa_domain }}"
+    state: present
+  register: ipa_user_result
+
+- name: Elevate new user-defined admin to super user on IPA server itself
+  ansible.builtin.lineinfile:
+    path: /etc/sudoers
+    line: "{{ ipa_admin_username }} ALL=(ALL) ALL"
+    validate: 'visudo -cf %s'
+    state: present
+
+- name: Create IPA sudo rule
+  community.general.ipa_sudorule:
+    ipa_pass: "{{ ipa_admin_password }}"
+    ipa_host: "{{ ipa_server_hostname }}.{{ ipa_domain }}"
+    name: admin_sudo_rule
+    description: "Sudo rule for IPA admin user"
+    user: "{{ ipa_admin_username }}"
+    hostcategory: all
+    cmdcategory: all
+    runasusercategory: all
+    runasgroupcategory: all
+    state: present
+  register: ipa_sudorule_result
+
+- name: Include the new user-defined IPA admin in admins group
+  community.general.ipa_group:
+    ipa_pass: "{{ ipa_admin_password }}"
+    ipa_host: "{{ ipa_server_hostname }}.{{ ipa_domain }}"
+    name: admins
+    user: "{{ ipa_admin_username }}"
+    append: true
+    state: present
+  register: ipa_group_admins_result
+
+- name: Include the new user-defined IPA admin in trust admins group
+  community.general.ipa_group:
+    ipa_pass: "{{ ipa_admin_password }}"
+    ipa_host: "{{ ipa_server_hostname }}.{{ ipa_domain }}"
+    name: trust admins
+    user: "{{ ipa_admin_username }}"
+    append: true
+    state: present
+  register: ipa_group_trust_admins_result
+
+- name: Set user-defined IPA admin password expire date as start of Unix Time (e.g. no expiration)
+  community.general.ipa_user:
+    ipa_pass: "{{ ipa_admin_password }}"
+    ipa_host: "{{ ipa_server_hostname }}.{{ ipa_domain }}"
+    uid: "{{ ipa_admin_username }}"
+    krbpasswordexpiration: 19700101000000
+    state: present
+  register: ipa_user_mod_result
+
+- name: Disable IPA default admin account
+  community.general.ipa_user:
+    ipa_pass: "{{ ipa_admin_password }}"
+    ipa_host: "{{ ipa_server_hostname }}.{{ ipa_domain }}"
+    uid: admin
+    state: disabled
+  register: ipa_admin_disable_result
+
 - name: Gather package facts
   ansible.builtin.package_facts:
     manager: auto

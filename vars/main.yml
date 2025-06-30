@@ -2,5 +2,8 @@
 ipa_domain: null
 ipa_server_hostname: null
 ipa_admin_password: null
+ipa_admin_username: null
+ipa_admin_givenname: IPAADMIN
+ipa_admin_surname: EWC
 openstack_subnet_dns_nameserver_ip_default: 1.1.1.1
 openstack_subnet_dns_nameserver_ip_fallback: 8.8.8.8
