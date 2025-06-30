@@ -123,6 +123,24 @@
     line: "apply_updates = yes"
     state: present
 
+- name: IPA services - Enabled and started
+  ansible.builtin.systemd:
+    name: ipa
+    enabled: true
+    state: started
+
+- name: DNF-automatic - Enabled and started
+  ansible.builtin.systemd:
+    name: dnf-automatic.timer
+    enabled: true
+    state: started
+
+- name: Firewalld - Disabled and stopped
+  ansible.builtin.service:
+    name: firewalld
+    state: stopped
+    enabled: false
+
 - name: Gather package facts
   ansible.builtin.package_facts:
     manager: auto
