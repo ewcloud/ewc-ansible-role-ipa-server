@@ -68,6 +68,15 @@
     insertafter: BOF
     state: present
 
+- name: Configure DNS server in NetworkManager
+  community.general.nmcli:
+    conn_name: "{{ ansible_default_ipv4.interface }}"
+    type: ethernet
+    dns4:
+      - "127.0.0.1"
+    state: present
+  notify: Reload NetworkManager
+
 - name: Gather package facts
   ansible.builtin.package_facts:
     manager: auto
