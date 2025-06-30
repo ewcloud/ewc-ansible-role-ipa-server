@@ -1,4 +1,12 @@
 ---
+- name: Validate user inputs
+  ansible.builtin.assert:
+    that:
+      - ipa_domain is string
+      - ipa_server_hostname is string
+    fail_msg: "Input validation failed. See README.md for information on required inputs and their format."
+    success_msg: "User input configuration is valid."
+
 - name: Verify Rocky Linux distribution and version
   ansible.builtin.assert:
     that:
@@ -36,6 +44,29 @@
   ansible.posix.selinux:
     policy: targeted
     state: permissive
+
+- name: Set hostname
+  ansible.builtin.hostname:
+    name: "{{ ipa_server_hostname }}.{{ ipa_domain }}"
+    use: systemd
+  register: hostname_set
+  changed_when: hostname_set.changed
+
+- name: Persist hostname to /etc/hostname
+  ansible.builtin.copy:
+    dest: /etc/hostname
+    content: "{{ ipa_server_hostname }}.{{ ipa_domain }}\n"
+    mode: '0644'
+  register: hostname_persist
+  changed_when: hostname_persist.changed
+
+- name: Add server /etc/hosts
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    regexp: '^{{ ansible_default_ipv4.address }}'
+    line: '{{ ansible_default_ipv4.address }} {{ ipa_server_hostname }}.{{ ipa_domain }}'
+    insertafter: BOF
+    state: present
 
 - name: Gather package facts
   ansible.builtin.package_facts:
