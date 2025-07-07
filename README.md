@@ -5,10 +5,16 @@ This repository contains a configuration template
 to customize your environment in the
 [European Weather Cloud (EWC)](https://europeanweather.cloud/).
 The template is designed to:
+* Validate that network/subnet configuration in the EWC tenancy, that is OpenStack
+security group rules, is suitable for IPA server operation (e.g. open ports for 
+DNS, LDAP, Kerberos, HTTP/HTTPS, SSH, etc.)
+* Check that target host has the recommended RAM availability
 * Configure a pre-existing RockyLinux 8 or RockyLinux 9 virtual machine such that it:
   * Provides DNS resolutions for discovery of resources (i.e. other virtual machines)
   * Enables centralized user and credentials creation/edition/deletion/authentication
   * Allows centralized authorization between users and resources
+* Automatically update the underlying subnet DNS nameserver to point to the newly configured IPA server
+
 
 ## Copyright and License
 >💡 No dependencies are distributed as part of this repository.
@@ -80,8 +86,16 @@ ansible-playbook -i inventory.yml playbook.yml
 | ipa_admin_username | Username of administrator account to replace the default IPA admin | `string` | n/a | yes |
 | ipa_admin_givenname | Given name of the administrator to replace the default IPA admin (needs not to belong to a physical person)  | `string` | `EWC` | yes |
 | ipa_admin_surname | Surname of the administrator to replace the default IPA admin (needs not to belong to a physical person) | `string` | `IPAADMIN` | yes |
-| openstack_subnet_dns_nameserver_ip_default | Default DNS nameserver IPV4 address registered on the OpenStack subnet where the IPA server will run | `string` | `1.1.1.1` | yes |
-| openstack_subnet_dns_nameserver_ip_fallback | Fallback DNS nameserver IPV4 address registered on the OpenStack subnet where the IPA server will run | `string` | `8.8.8.8` | yes |
+| os_auth_url | OpenStack API authentication/authorization URL | `string` | `https://keystone.cloudferro.com:5000/v3` | yes |
+| os_username | User with administrator access to the underlying OpenStack platform | `string` | n/a | yes |
+| os_password | Password for the user with administrator access to the underlying OpenStack platform | `string` | n/a | yes |
+| os_project_name | Name of the OpenStack project on which the EWC tenant is hosted. Example: `cloud_00001_1` | `string` | n/a | yes |
+| os_network_name | Openstack network to which the target virtual machine has access to | `string` | `private` | yes |
+| os_subnet_name | Openstack subnet in which the target virtual machine is running | `string` | `private subnet` | yes |
+| os_subnet_cidr | IP range (in CIDR format) that spans the OpenStack subnet in which the target virtual machines is running | `string` | `10.0.0.0/24` | yes |
+| os_security_group_name | OpenStack security group containing all firewall rules required by the IPA server/client communication. Example: `ldap`  | `string` | n/a | yes |
+| os_subnet_dns_nameserver_ip_default | Default DNS nameserver IPV4 address registered on the OpenStack subnet where the IPA server will run | `string` | `1.1.1.1` | yes |
+| os_subnet_dns_nameserver_ip_fallback | Fallback DNS nameserver IPV4 address registered on the OpenStack subnet where the IPA server will run | `string` | `8.8.8.8` | yes |
 
 
 ## Final Environment
