@@ -80,22 +80,18 @@ ansible-playbook -i inventory.yml playbook.yml
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|----------|
-| ipa_domain |The IPA domain name. Example: `<memberstate>-<organization>-<projectname>.ewc` | `string` | n/a | yes |
+| ipa_domain |IPA domain name. Example: `<memberstate>-<organization>-<projectname>.ewc` | `string` | n/a | yes |
 | ipa_server_hostname | IPA server host name. Example: `ldap` | `string`| n/a | yes |
-| ipa_admin_password | The IPA Directory Manager/Admin password (at least 8 characters long) | `string` | n/a | yes |
-| ipa_admin_username | Username of administrator account to replace the default IPA admin | `string` | n/a | yes |
-| ipa_admin_givenname | Given name of the administrator to replace the default IPA admin (needs not to belong to a physical person)  | `string` | `EWC` | yes |
-| ipa_admin_surname | Surname of the administrator to replace the default IPA admin (needs not to belong to a physical person) | `string` | `IPAADMIN` | yes |
-| os_auth_url | OpenStack API authentication/authorization URL | `string` | `https://keystone.cloudferro.com:5000/v3` | yes |
-| os_username | User with administrator access to the underlying OpenStack platform | `string` | n/a | yes |
-| os_password | Password for the user with administrator access to the underlying OpenStack platform | `string` | n/a | yes |
-| os_project_name | Name of the OpenStack project on which the EWC tenant is hosted. Example: `cloud_00001_1` | `string` | n/a | yes |
-| os_network_name | Openstack network to which the target virtual machine has access to | `string` | `private` | yes |
-| os_subnet_name | Openstack subnet in which the target virtual machine is running | `string` | `private subnet` | yes |
-| os_subnet_cidr | IP range (in CIDR format) that spans the OpenStack subnet in which the target virtual machines is running | `string` | `10.0.0.0/24` | yes |
+| ipa_admin_username | username of administrator account to replace the default IPA admin | `string` | n/a | yes |
+| ipa_admin_password | IPA Directory Manager/Admin password (at least 8 characters long) | `string` | n/a | yes |
+| ipa_admin_givenname | given name of the administrator to replace the default IPA admin (needs not to belong to a physical person). Example: `EWC` | `string` | n/a | yes |
+| ipa_admin_surname | surname of the administrator to replace the default IPA admin (needs not to belong to a physical person). Example: `IPAADMIN` | `string` | n/a | yes |
+| os_network_name | OpenStack network to which the target virtual machine has access to. Example: `private` | `string` | n/a | yes |
+| os_subnet_name | OpenStack subnet in which the target virtual machine is running. Example: `private subnet` | `string` | n/a | yes |
+| os_subnet_cidr | IP range (in CIDR format) that spans the OpenStack subnet in which the target virtual machines is running. Example: `10.0.0.0/24` | `string` |n/a  | yes |
 | os_security_group_name | OpenStack security group containing all firewall rules required by the IPA server/client communication. Example: `ldap`  | `string` | n/a | yes |
-| os_subnet_dns_nameserver_ip_default | Default DNS nameserver IPV4 address registered on the OpenStack subnet where the IPA server will run | `string` | `1.1.1.1` | yes |
-| os_subnet_dns_nameserver_ip_fallback | Fallback DNS nameserver IPV4 address registered on the OpenStack subnet where the IPA server will run | `string` | `8.8.8.8` | yes |
+| os_subnet_dns_nameserver_ip_default | default DNS nameserver IPV4 address registered on the OpenStack subnet where the IPA server will run. Example: `1.1.1.1` | `string` | n/a | yes |
+| os_subnet_dns_nameserver_ip_fallback | fallback DNS nameserver IPV4 address registered on the OpenStack subnet where the IPA server will run. Example: `8.8.8.8` | `string` | n/a  | yes |
 
 
 ## Final Environment

@@ -3,15 +3,11 @@ ipa_domain: null
 ipa_server_hostname: null
 ipa_admin_password: null
 ipa_admin_username: null
-ipa_admin_givenname: IPAADMIN
-ipa_admin_surname: EWC
-os_auth_url: https://keystone.cloudferro.com:5000/v3
-os_username: null
-os_password: null
-os_project_name: null
-os_network_name: private
-os_subnet_name: private subnet
-os_subnet_cidr: 10.0.0.0/24
+ipa_admin_givenname: null
+ipa_admin_surname: null
+os_network_name: null
+os_subnet_name: null
+os_subnet_cidr: null
 os_security_group_name: null
-os_subnet_dns_nameserver_ip_default: 1.1.1.1
-os_subnet_dns_nameserver_ip_fallback: 8.8.8.8
+os_subnet_dns_nameserver_ip_default: null
+os_subnet_dns_nameserver_ip_fallback: null

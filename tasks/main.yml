@@ -5,30 +5,27 @@
       - ipa_domain is string and ipa_domain is defined and ipa_domain != ''
       - ipa_server_hostname is string and ipa_server_hostname is defined and ipa_server_hostname != ''
       - ipa_admin_password is string and ipa_admin_password is defined and ipa_admin_password != ''
+      - ipa_admin_password | length >= 8
       - ipa_admin_username is string and ipa_admin_username is defined and ipa_admin_username != ''
       - ipa_admin_givenname is string and ipa_admin_givenname is defined and ipa_admin_givenname != ''
       - ipa_admin_surname is string and ipa_admin_surname is defined and ipa_admin_surname != ''
-      - os_auth_url is string and os_auth_url is defined and os_auth_url != ''
-      - os_username is string and os_username is defined and os_username != ''
-      - os_password is string and  os_password is defined and os_password != ''
-      - os_project_name is string and os_project_name is defined and os_project_name != ''
       - os_network_name is string and os_network_name is defined and os_network_name != ''
       - os_subnet_name is string and os_subnet_name is defined and os_subnet_name != ''
       - os_subnet_cidr is string and os_subnet_cidr is defined and os_subnet_cidr != ''
+      - os_subnet_cidr | ansible.utils.ipaddr
       - os_security_group_name is string and os_security_group_name is defined and os_security_group_name != ''
       - os_subnet_dns_nameserver_ip_default is string and os_subnet_dns_nameserver_ip_default is defined and os_subnet_dns_nameserver_ip_default != ''
+      - os_subnet_dns_nameserver_ip_default | ansible.utils.ipaddr
+      - os_subnet_dns_nameserver_ip_default | regex_search('^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})$')
       - os_subnet_dns_nameserver_ip_fallback is string and os_subnet_dns_nameserver_ip_fallback is defined and os_subnet_dns_nameserver_ip_fallback != ''
+      - os_subnet_dns_nameserver_ip_fallback | ansible.utils.ipaddr
+      - os_subnet_dns_nameserver_ip_fallback | regex_search('^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})$')
     fail_msg: "Input validation failed. See README.md for information on required inputs and their format."
     success_msg: "User input configuration is valid."
 
 - name: Gather information about user-specified OpenStack network
   openstack.cloud.networks_info:
     name: "{{ os_network_name }}"
-    auth:
-      auth_url: "{{ os_auth_url }}"
-      username: "{{ os_username }}"
-      password: "{{ os_password }}"
-      project_name: "{{ os_project_name }}"
   register: networks_info
   delegate_to: localhost
   become: false
@@ -45,11 +42,6 @@
 - name: Gather information about OpenStack subnet
   openstack.cloud.subnets_info:
     name: "{{ os_subnet_name }}"
-    auth:
-      auth_url: "{{ os_auth_url }}"
-      username: "{{ os_username }}"
-      password: "{{ os_password }}"
-      project_name: "{{ os_project_name }}"
   register: subnets_info
   delegate_to: localhost
   become: false
@@ -66,11 +58,6 @@
 - name: Gather information about OpenStack security group
   openstack.cloud.security_group_info:
     name: "{{ os_security_group_name }}"
-    auth:
-      auth_url: "{{ os_auth_url }}"
-      username: "{{ os_username }}"
-      password: "{{ os_password }}"
-      project_name: "{{ os_project_name }}"
   register: security_group_info
   delegate_to: localhost
   become: false
@@ -87,11 +74,6 @@
 - name: Gather information about OpenStack security group rules
   openstack.cloud.security_group_rule_info:
     security_group: "{{ os_security_group_name }}"
-    auth:
-      auth_url: "{{ os_auth_url }}"
-      username: "{{ os_username }}"
-      password: "{{ os_password }}"
-      project_name: "{{ os_project_name }}"
   register: security_group_rule_info
   delegate_to: localhost
   become: false
@@ -432,14 +414,10 @@
     dns_nameservers:
       - "{{ ansible_default_ipv4.address }}"
     state: present
-    auth:
-      auth_url: "{{ os_auth_url }}"
-      username: "{{ os_username }}"
-      password: "{{ os_password }}"
-      project_name: "{{ os_project_name }}"
   register: subnet_result
   delegate_to: localhost
   become: false
+  no_log: true
 
 - name: Gather package facts
   ansible.builtin.package_facts:
