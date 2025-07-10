@@ -300,6 +300,7 @@
   when: not ipa_config_stat.stat.exists
   register: ipa_install_result
   failed_when: ipa_install_result.rc != 0 and 'already installed' not in ipa_install_result.stderr
+  no_log: true
 
 - name: Configure DNF-automatic update_type
   ansible.builtin.lineinfile:
@@ -346,6 +347,7 @@
   register: kinit_result
   failed_when: kinit_result.rc != 0
   changed_when: false
+  no_log: true
 
 - name: Add new user-defined IPA admin
   community.general.ipa_user:
@@ -357,6 +359,7 @@
     ipa_host: "{{ ipa_server_hostname }}.{{ ipa_domain }}"
     state: present
   register: ipa_user_result
+  no_log: true
 
 - name: Elevate new user-defined admin to super user on IPA server itself
   ansible.builtin.lineinfile:
@@ -378,6 +381,7 @@
     runasgroupcategory: all
     state: present
   register: ipa_sudorule_result
+  no_log: true
 
 - name: Include the new user-defined IPA admin in admins group
   community.general.ipa_group:
@@ -388,6 +392,7 @@
     append: true
     state: present
   register: ipa_group_admins_result
+  no_log: true
 
 - name: Include the new user-defined IPA admin in trust admins group
   community.general.ipa_group:
@@ -398,6 +403,7 @@
     append: true
     state: present
   register: ipa_group_trust_admins_result
+  no_log: true
 
 - name: Set user-defined IPA admin password expire date as start of Unix Time (e.g. no expiration)
   community.general.ipa_user:
@@ -407,6 +413,7 @@
     krbpasswordexpiration: 19700101000000
     state: present
   register: ipa_user_mod_result
+  no_log: true
 
 - name: Disable IPA default admin account
   community.general.ipa_user:
@@ -415,6 +422,7 @@
     uid: admin
     state: disabled
   register: ipa_admin_disable_result
+  no_log: true
 
 - name: Point DNS nameservers in OpenStack subnet to new IPA server
   openstack.cloud.subnet:
