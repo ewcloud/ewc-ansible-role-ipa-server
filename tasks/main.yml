@@ -210,7 +210,6 @@
       - ipa-server
       - ipa-server-dns
       - bind-dyndb-ldap
-      - dnf-automatic
     state: present
 
 - name: SSH - Disallow root SSH access
@@ -284,36 +283,9 @@
   failed_when: ipa_install_result.rc != 0 and 'already installed' not in ipa_install_result.stderr
   no_log: true
 
-- name: Configure DNF-automatic update_type
-  ansible.builtin.lineinfile:
-    path: /etc/dnf/automatic.conf
-    regexp: "^upgrade_type"
-    line: "upgrade_type = security"
-    state: present
-
-- name: Configure DNF-automatic download_updates
-  ansible.builtin.lineinfile:
-    path: /etc/dnf/automatic.conf
-    regexp: "^download_updates"
-    line: "download_updates = yes"
-    state: present
-
-- name: Configure DNF-automatic apply_updates
-  ansible.builtin.lineinfile:
-    path: /etc/dnf/automatic.conf
-    regexp: "^apply_updates"
-    line: "apply_updates = yes"
-    state: present
-
 - name: IPA services - Enabled and started
   ansible.builtin.systemd:
     name: ipa
-    enabled: true
-    state: started
-
-- name: DNF-automatic - Enabled and started
-  ansible.builtin.systemd:
-    name: dnf-automatic.timer
     enabled: true
     state: started
 
@@ -430,4 +402,3 @@
       - "ipa-server: {{ ansible_facts.packages['ipa-server'][0].version }}-{{ ansible_facts.packages['ipa-server'][0].release }}"
       - "ipa-server-dns: {{ ansible_facts.packages['ipa-server-dns'][0].version }}-{{ ansible_facts.packages['ipa-server-dns'][0].release }}"
       - "bind-dyndb-ldap: {{ ansible_facts.packages['bind-dyndb-ldap'][0].version }}-{{ ansible_facts.packages['bind-dyndb-ldap'][0].release }}"
-      - "dnf-automatic: {{ ansible_facts.packages['dnf-automatic'][0].version }}-{{ ansible_facts.packages['dnf-automatic'][0].release }}"
