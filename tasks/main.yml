@@ -196,6 +196,20 @@
     fail_msg: "Insufficient free RAM (less than 2GB). Increase VM memory or add swap."
     success_msg: "Sufficient RAM available."
 
+- name: Pin package versions prior to installation
+  ansible.builtin.set_fact:
+    package_versions:
+      rockylinux_8:
+        firewalld: "firewalld-0.9.11-9.el8_10"
+        ipa-server: "ipa-server-4.9.13-18.module+el8.10.0+2000+979bf254"
+        ipa-server-dns: "ipa-server-dns-4.9.13-18.module+el8.10.0+2000+979bf254"
+        bind-dyndb-ldap: "bind-dyndb-ldap-11.6-6.module+el8.10.0+1960+1ed527b3"
+      rockylinux_9:
+        firewalld: "firewalld-1.3.4-7.el9"
+        ipa-server: "ipa-server-4.12.2-14.el9_6.1"
+        ipa-server-dns: "ipa-server-dns-4.12.2-14.el9_6.1"
+        bind-dyndb-ldap: "bind-dyndb-ldap-11.11-3.el9_6"
+
 - name: Enable Red Hat Enterprise Linux Identity Management system module on RockyLinux 8
   ansible.builtin.dnf:
     name: "@idm:DL1"
@@ -206,11 +220,14 @@
 - name: Install required packages
   ansible.builtin.dnf:
     name:
-      - firewalld
-      - ipa-server
-      - ipa-server-dns
-      - bind-dyndb-ldap
+      - "{{ item }}"
     state: present
+    allow_downgrade: true
+  loop:
+    - "{{ package_versions['rockylinux_' + ansible_facts['distribution_major_version']]['firewalld'] }}"
+    - "{{ package_versions['rockylinux_' + ansible_facts['distribution_major_version']]['ipa-server'] }}"
+    - "{{ package_versions['rockylinux_' + ansible_facts['distribution_major_version']]['ipa-server-dns'] }}"
+    - "{{ package_versions['rockylinux_' + ansible_facts['distribution_major_version']]['bind-dyndb-ldap'] }}"
 
 - name: SSH - Disallow root SSH access
   ansible.builtin.lineinfile:
