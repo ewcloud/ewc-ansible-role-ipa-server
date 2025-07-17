@@ -26,7 +26,8 @@ files in this repository.
 
 Before proceeding, if you lack OpenStack Application Credentials or do not know
 how to make them available to Ansible in your development environment, make sure
-to check out the [EWC documentation](https://confluence.ecmwf.int/display/EWCLOUDKB/EWC+-+How+to+request+Openstack+Application+Credentials).
+to check out the 
+[EWC documentation](https://confluence.ecmwf.int/display/EWCLOUDKB/EWC+-+How+to+request+Openstack+Application+Credentials).
 
 ## Usage
 
@@ -35,7 +36,8 @@ example structure below, with `ewc-ansible-role-ipa-server` being a clone of thi
 repository:
 ```
 .
-├── ewc-ansible-role-ipa-server
+├── roles
+│   └── ewc-ansible-role-ipa-server
 ├── inventory.yml
 └── playbook.yml
 ```
@@ -75,7 +77,6 @@ Then, proceed to create an Ansible Playbook file to load your customizations:
 ```
 
 ### 3. Apply the template
-
 
 You can apply changes on the target host by running:
 ```bash
