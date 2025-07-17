@@ -102,23 +102,30 @@ ansible-playbook -i inventory.yml playbook.yml
 
 
 ## Final Environment
->⚠️ Versions listed here refer only to those available for RockyLinux 8
-packages as of June 26th, 2025. As new security patches/features are 
-published by their authors, and newer RockyLinux image versions are 
-introduced into the EWC, the effective versions installed in your 
-environment might be higher.
+
+### RockyLinux 8 Environment
 
 Applying this template will trigger the installation of the following 
-open-source packages onto your desired target host:
+open-source packages onto your desired target RockyLinux 8 host:
 
 | Name | Version | License | Package Info |
 |------|---------|---------|--------------|
-| firewalld | >= 0.9.11-9.el8_10 | GPLv2+ | http://www.firewalld.org |
-| ipa-server | >= 4.9.13-18.el8_10 | GPLv3+ | http://www.freeipa.org |
-| ipa-server-dns | >= 4.9.13-18.el8_10 | GPLv3+ | http://www.freeipa.org |
-| bind-dyndb-ldap | >= 11.6-6.el8_10| GPLv2+ | https://releases.pagure.org/bind-dyndb-ldap |
-| dnf-automatic | >= 4.7.0-20.el8 | GPLv2+ | https://github.com/rpm-software-management/dnf |
+| firewalld | 0.9 | GPLv2+ | http://www.firewalld.org |
+| ipa-server | 4.9 | GPLv3+ | http://www.freeipa.org |
+| ipa-server-dns | 4.9 | GPLv3+ | http://www.freeipa.org |
+| bind-dyndb-ldap | 11.6 | GPLv2+ | https://releases.pagure.org/bind-dyndb-ldap |
 
+### RockyLinux 9 Environment
+
+Likewise, on your desired target RockyLinux 9 host, the template will trigger
+installation of the following open-source packages:
+
+| Name | Version | License | Package Info |
+|------|---------|---------|--------------|
+| firewalld | 1.3 | GPLv2+ | http://www.firewalld.org |
+| ipa-server | 4.12 | GPLv3+ | http://www.freeipa.org/ |
+| ipa-server-dns | 4.12 | GPLv3+ | http://www.freeipa.org/ |
+| bind-dyndb-ldap | 11.11 | GPLv2+ | https://releases.pagure.org/bind-dyndb-ldap |
 
 ## Changelog
 All notable changes (i.e. fixes, features and breaking changes) are documented 
