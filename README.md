@@ -22,6 +22,12 @@ DNS, LDAP, Kerberos, HTTP/HTTPS, SSH, etc.)
 See the [LICENSE](./LICENSE) file for licensing information as it pertains to
 files in this repository.
 
+## Authentication
+
+Before proceeding, if you lack OpenStack Application Credentials or do not know
+how to make them available to Ansible in your development environment, make sure
+to check out the [EWC documentation](https://confluence.ecmwf.int/display/EWCLOUDKB/EWC+-+How+to+request+Openstack+Application+Credentials).
+
 ## Usage
 
 The step-by-step described below assume your local file system follows the 
