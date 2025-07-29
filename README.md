@@ -1,4 +1,4 @@
-# IPA Sever Ansible Role
+# IPA Server Ansible Role
 
 This repository contains a configuration template 
 (i.e. an [Ansible Role](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_reuse_roles.html)) 
