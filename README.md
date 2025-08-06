@@ -95,16 +95,16 @@ ansible-playbook -i inventory.yml playbook.yml
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|----------|
-| ipa_domain |IPA domain name. Example: `<memberstate>-<organization>-<projectname>.ewc` | `string` | n/a | yes |
-| ipa_server_hostname | IPA server host name. Example: `ldap` | `string`| n/a | yes |
+| ipa_domain | domain name to be managed by the IPA server. Example: `<memberstate>-<organization>-<projectname>.ewc` | `string` | n/a | yes |
+| ipa_server_hostname | hostname of the target vm where the IPA server will be installed. Example: `ipa-server-1` | `string`| n/a | yes |
 | ipa_admin_username | username of administrator account to replace the default IPA admin | `string` | n/a | yes |
-| ipa_admin_password | IPA Directory Manager/Admin password (at least 8 characters long) | `string` | n/a | yes |
-| ipa_admin_givenname | given name of the administrator to replace the default IPA admin (needs not to belong to a physical person). Example: `EWC` | `string` | n/a | yes |
-| ipa_admin_surname | surname of the administrator to replace the default IPA admin (needs not to belong to a physical person). Example: `IPAADMIN` | `string` | n/a | yes |
+| ipa_admin_password | password of administrator account to replace the default IPA admin (at least 8 characters long) | `string` | n/a | yes |
+| ipa_admin_givenname | given name of the administrator to replace the default IPA admin (not necessarily a real person's name). Example: `EWC` | `string` | n/a | yes |
+| ipa_admin_surname | surname of the administrator to replace the default IPA admin (not necessarily a real person's name). Example: `IPAADMIN` | `string` | n/a | yes |
 | os_network_name | OpenStack network to which the target virtual machine has access to. Example: `private` | `string` | n/a | yes |
 | os_subnet_name | OpenStack subnet in which the target virtual machine is running. Example: `private subnet` | `string` | n/a | yes |
 | os_subnet_cidr | IP range (in CIDR format) that spans the OpenStack subnet in which the target virtual machines is running. Example: `10.0.0.0/24` | `string` |n/a  | yes |
-| os_security_group_name | OpenStack security group containing all firewall rules required by the IPA server/client communication. Example: `ldap`  | `string` | n/a | yes |
+| os_security_group_name | OpenStack security group containing all firewall rules required by the IPA server/client communication. Example: `ipa-server-1`  | `string` | n/a | yes |
 | os_subnet_dns_nameserver_ip_default | default DNS nameserver IPV4 address registered on the OpenStack subnet where the IPA server will run. Example: `1.1.1.1` | `string` | n/a | yes |
 | os_subnet_dns_nameserver_ip_fallback | fallback DNS nameserver IPV4 address registered on the OpenStack subnet where the IPA server will run. Example: `8.8.8.8` | `string` | n/a  | yes |
 
