@@ -113,7 +113,7 @@ ansible-playbook -i inventory.yml playbook.yml
 
 Third-party components used in the resulting environment.
 
-### RockyLinux 8 Environment
+### RockyLinux 8.10 Environment
 The following components will be included in the resulting environment:
 
 | Component | Version | License | Home URL |
@@ -123,7 +123,7 @@ The following components will be included in the resulting environment:
 | ipa-server-dns | 4.9 | GPLv3+ | http://www.freeipa.org |
 | bind-dyndb-ldap | 11.6 | GPLv2+ | https://releases.pagure.org/bind-dyndb-ldap |
 
-### RockyLinux 9 Environment
+### RockyLinux 9.6 Environment
 The following components will be included in the resulting environment:
 
 | Component | Version | License | Home URL |
