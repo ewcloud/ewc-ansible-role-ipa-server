@@ -17,10 +17,18 @@ DNS, LDAP, Kerberos, HTTP/HTTPS, SSH, etc.)
 
 
 ## Copyright and License
->💡 No dependencies are distributed as part of this repository.
+Copyright © EUMETSAT 2025.
 
-See the [LICENSE](./LICENSE) file for licensing information as it pertains to
-files in this repository.
+The provided code and instructions are licensed under the [MIT license](./LICENSE).
+They are intended to automate the setup of an environment that includes 
+third-party software components.
+The usage and distribution terms of the resulting environment are 
+subject to the individual licenses of those third-party libraries.
+
+Users are responsible for reviewing and complying with the licenses of
+all third-party components included in the environment.
+
+Contact [EUMETSAT](http://www.eumetsat.int) for details on the usage and distribution terms.
 
 ## Authentication
 
@@ -101,14 +109,14 @@ ansible-playbook -i inventory.yml playbook.yml
 | os_subnet_dns_nameserver_ip_fallback | fallback DNS nameserver IPV4 address registered on the OpenStack subnet where the IPA server will run. Example: `8.8.8.8` | `string` | n/a  | yes |
 
 
-## Final Environment
+## SW Bill of Materials (SBoM)
+
+Third-party components used in the resulting environment.
 
 ### RockyLinux 8 Environment
+The following components will be included in the resulting environment:
 
-Applying this template will trigger the installation of the following 
-open-source packages onto your desired target RockyLinux 8 host:
-
-| Name | Version | License | Package Info |
+| Component | Version | License | Home URL |
 |------|---------|---------|--------------|
 | firewalld | 0.9 | GPLv2+ | http://www.firewalld.org |
 | ipa-server | 4.9 | GPLv3+ | http://www.freeipa.org |
@@ -116,11 +124,9 @@ open-source packages onto your desired target RockyLinux 8 host:
 | bind-dyndb-ldap | 11.6 | GPLv2+ | https://releases.pagure.org/bind-dyndb-ldap |
 
 ### RockyLinux 9 Environment
+The following components will be included in the resulting environment:
 
-Likewise, on your desired target RockyLinux 9 host, the template will trigger
-installation of the following open-source packages:
-
-| Name | Version | License | Package Info |
+| Component | Version | License | Home URL |
 |------|---------|---------|--------------|
 | firewalld | 1.3 | GPLv2+ | http://www.firewalld.org |
 | ipa-server | 4.12 | GPLv3+ | http://www.freeipa.org/ |
