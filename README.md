@@ -5,15 +5,15 @@ This repository contains a configuration template
 to customize your environment in the
 [European Weather Cloud (EWC)](https://europeanweather.cloud/).
 The template is designed to:
-* Validate that network/subnet configuration in the EWC tenancy, that is OpenStack
-security group rules, is suitable for IPA server operation (e.g. open ports for 
-DNS, LDAP, Kerberos, HTTP/HTTPS, SSH, etc.)
-* Check that target host has the recommended RAM availability
-* Configure a pre-existing RockyLinux 8 or RockyLinux 9 virtual machine such that it:
-  * Provides DNS resolutions for discovery of resources (i.e. other virtual machines)
+* Validate that network/subnet configuration in the EWC tenancy
+* Configure a pre-existing virtual machine running RockyLinux version 8 or 9,
+and with a minimum recommended 4GB of RAM, such that it:
+  * Provides DNS resolutions for discovery of resources (i.e. other virtual
+  machines)
   * Enables centralized user and credentials creation/edition/deletion/authentication
   * Allows centralized authorization between users and resources
-* Automatically update the underlying subnet DNS nameserver to point to the newly configured IPA server
+* Automatically update the underlying subnet DNS nameserver to point to the
+newly configured IPA server
 
 
 ## Copyright and License

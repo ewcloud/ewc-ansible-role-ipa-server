@@ -84,13 +84,6 @@
     fail_msg: "Supports RockyLinux versions 8.10 or 9.6. Detected: {{ ansible_facts['distribution'] }} {{ ansible_facts['distribution_version'] }}."
     success_msg: "Running on RockyLinux {{ ansible_facts['distribution_version'] }}."
 
-- name: Verify RAM availability
-  ansible.builtin.assert:
-    that:
-      - ansible_facts['memory_mb']['real']['free'] >= 2048
-    fail_msg: "Insufficient free RAM (less than 2GB). Increase VM memory or add swap."
-    success_msg: "Sufficient RAM available."
-
 - name: Pin package versions prior to installation
   ansible.builtin.set_fact:
     package_versions:
