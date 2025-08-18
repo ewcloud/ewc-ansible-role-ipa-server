@@ -114,7 +114,6 @@ The following components will be included in the resulting environment:
 
 | Component | Version | License | Home URL |
 |------|---------|---------|--------------|
-| firewalld | 0.9 | GPLv2+ | http://www.firewalld.org |
 | ipa-server | 4.9 | GPLv3+ | http://www.freeipa.org |
 | ipa-server-dns | 4.9 | GPLv3+ | http://www.freeipa.org |
 | bind-dyndb-ldap | 11.6 | GPLv2+ | https://releases.pagure.org/bind-dyndb-ldap |
@@ -124,7 +123,6 @@ The following components will be included in the resulting environment:
 
 | Component | Version | License | Home URL |
 |------|---------|---------|--------------|
-| firewalld | 1.3 | GPLv2+ | http://www.firewalld.org |
 | ipa-server | 4.12 | GPLv3+ | http://www.freeipa.org/ |
 | ipa-server-dns | 4.12 | GPLv3+ | http://www.freeipa.org/ |
 | bind-dyndb-ldap | 11.11 | GPLv2+ | https://releases.pagure.org/bind-dyndb-ldap |
