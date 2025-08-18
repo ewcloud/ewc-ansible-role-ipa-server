@@ -95,15 +95,14 @@ ansible-playbook -i inventory.yml playbook.yml
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|----------|
-| ipa_domain | domain name to be managed by the IPA server. Example: `<memberstate>-<organization>-<projectname>.ewc` | `string` | n/a | yes |
+| ipa_domain | domain name to be managed by the IPA server. Example: `eumetsat.sandbox.ewc` | `string` | n/a | yes |
 | ipa_server_hostname | hostname of the target vm where the IPA server will be installed. Example: `ipa-server-1` | `string`| n/a | yes |
-| ipa_admin_username | username of administrator account to replace the default IPA admin | `string` | n/a | yes |
-| ipa_admin_password | password of administrator account to replace the default IPA admin (at least 8 characters long) | `string` | n/a | yes |
+| ipa_admin_username | username of administrator account to replace the default IPA admin. Example: `ipaadmin` | `string` | n/a | yes |
+| ipa_admin_password | password of administrator account to replace the default IPA admin (at least 8 characters long). Example: `my-secret-password` | `string` | n/a | yes |
 | ipa_admin_givenname | given name of the administrator to replace the default IPA admin (not necessarily a real person's name). Example: `EWC` | `string` | n/a | yes |
 | ipa_admin_surname | surname of the administrator to replace the default IPA admin (not necessarily a real person's name). Example: `IPAADMIN` | `string` | n/a | yes |
 | os_network_name | OpenStack network to which the target virtual machine has access to. Example: `private` | `string` | n/a | yes |
-| os_security_group_name | OpenStack security group containing all firewall rules required by the IPA server/client communication. Example: `ipa-server-1`  | `string` | n/a | yes |
-
+| os_security_group_name | OpenStack security group containing all firewall rules required by the IPA server/client communication. Example: `ipa` | `string` | n/a | yes |
 
 ## SW Bill of Materials (SBoM)
 
