@@ -6,8 +6,4 @@ ipa_admin_username: null
 ipa_admin_givenname: null
 ipa_admin_surname: null
 os_network_name: null
-os_subnet_name: null
-os_subnet_cidr: null
 os_security_group_name: null
-os_subnet_dns_nameserver_ip_default: null
-os_subnet_dns_nameserver_ip_fallback: null

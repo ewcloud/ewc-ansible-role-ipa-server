@@ -10,16 +10,7 @@
       - ipa_admin_givenname is string and ipa_admin_givenname is defined and ipa_admin_givenname != ''
       - ipa_admin_surname is string and ipa_admin_surname is defined and ipa_admin_surname != ''
       - os_network_name is string and os_network_name is defined and os_network_name != ''
-      - os_subnet_name is string and os_subnet_name is defined and os_subnet_name != ''
-      - os_subnet_cidr is string and os_subnet_cidr is defined and os_subnet_cidr != ''
-      - os_subnet_cidr | ansible.utils.ipaddr
       - os_security_group_name is string and os_security_group_name is defined and os_security_group_name != ''
-      - os_subnet_dns_nameserver_ip_default is string and os_subnet_dns_nameserver_ip_default is defined and os_subnet_dns_nameserver_ip_default != ''
-      - os_subnet_dns_nameserver_ip_default | ansible.utils.ipaddr
-      - os_subnet_dns_nameserver_ip_default | regex_search('^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})$')
-      - os_subnet_dns_nameserver_ip_fallback is string and os_subnet_dns_nameserver_ip_fallback is defined and os_subnet_dns_nameserver_ip_fallback != ''
-      - os_subnet_dns_nameserver_ip_fallback | ansible.utils.ipaddr
-      - os_subnet_dns_nameserver_ip_fallback | regex_search('^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})$')
     fail_msg: "Input validation failed. See README.md for information on required inputs and their format."
     success_msg: "User input configuration is valid."
 
@@ -30,30 +21,45 @@
   delegate_to: localhost
   become: false
 
-- name: Assert user-specified OpenStack network exists
+- name: Verify user-specified OpenStack network exists
   ansible.builtin.assert:
     that:
       - networks_info.networks | length > 0
-    fail_msg: "OpenStack network '{{ os_network_name }}' does not exist."
+      - networks_info.networks | length == 1
+    fail_msg: "OpenStack network '{{ os_network_name }}' does not exist or is not unique."
     success_msg: "OpenStack network '{{ os_network_name }}' exists."
-  delegate_to: localhost
-  become: false
 
-- name: Gather information about OpenStack subnet
+- name: Get ID of user-defined network
+  ansible.builtin.set_fact:
+    os_network_id: "{{ networks_info.networks[0].id }}"
+
+- name: Gather information about subnets within user-defined OpenStack network
   openstack.cloud.subnets_info:
-    name: "{{ os_subnet_name }}"
+    filters:
+      network_id: "{{ os_network_id }}"
   register: subnets_info
   delegate_to: localhost
   become: false
 
-- name: Assert user-specified OpenStack subnet exists
+- name: Verify OpenStack subnets are available within user-defined network
   ansible.builtin.assert:
     that:
       - subnets_info.subnets | length > 0
-    fail_msg: "OpenStack subnet '{{ os_subnet_name }}' does not exist in network '{{ os_network_name }}'."
-    success_msg: "OpenStack subnet '{{ os_subnet_name }}' exists in network '{{ os_network_name }}'."
-  delegate_to: localhost
-  become: false
+    fail_msg: " No OpenStack subnets exist in network '{{ os_network_name }}'."
+    success_msg: "A total of {{ subnets_info.subnets | length }} OpenStack subnet(s) available in network '{{ os_network_name }}'."
+
+- name: Get name, ID, CIDR and DNS nameservers of subnet (choose first)
+  ansible.builtin.set_fact:
+    os_subnet_name: "{{ subnets_info.subnets[0].name }}"
+    os_subnet_cidr: "{{ subnets_info.subnets[0].cidr }}"
+    os_subnet_dns_nameservers: "{{ subnets_info.subnets[0].dns_nameservers | default([]) }}"
+
+- name: Verify chosen subnet has at least two DNS nameservers set
+  ansible.builtin.assert:
+    that:
+      - os_subnet_dns_nameservers | length > 1
+    fail_msg: "Subnet '{{ os_subnet_name }}' has no DNS nameservers configured"
+    success_msg: "The following DNS nameservers are set in subnet '{{ os_subnet_name }}': {{ os_subnet_dns_nameservers }}"
 
 - name: Gather information about OpenStack security group
   openstack.cloud.security_group_info:
@@ -62,124 +68,13 @@
   delegate_to: localhost
   become: false
 
-- name: Assert user-specified OpenStack security group exists
+- name: Verify user-specified OpenStack security group exists
   ansible.builtin.assert:
     that:
       - security_group_info.security_groups | length > 0
-    fail_msg: "OpenStack security group '{{ os_security_group_name }}' does not exist."
+      - security_group_info.security_groups | length == 1
+    fail_msg: "OpenStack security group '{{ os_security_group_name }}' does not exist or is not unique."
     success_msg: "OpenStack security group '{{ os_security_group_name }}' exists."
-  delegate_to: localhost
-  become: false
-
-- name: Gather information about OpenStack security group rules
-  openstack.cloud.security_group_rule_info:
-    security_group: "{{ os_security_group_name }}"
-  register: security_group_rule_info
-  delegate_to: localhost
-  become: false
-
-- name: Define OpenStack security group rules required for IPA
-  ansible.builtin.set_fact:
-    required_security_rules:
-      - direction: ingress
-        ether_type: IPv4
-        protocol: tcp
-        port_range_min: 80
-        port_range_max: 80
-        remote_ip_prefix: 0.0.0.0/0
-      - direction: ingress
-        ether_type: IPv4
-        protocol: udp
-        port_range_min: 123
-        port_range_max: 123
-        remote_ip_prefix: 0.0.0.0/0
-      - direction: ingress
-        ether_type: IPv4
-        protocol: tcp
-        port_range_min: 88
-        port_range_max: 88
-        remote_ip_prefix: 0.0.0.0/0
-      - direction: ingress
-        ether_type: IPv4
-        protocol: udp
-        port_range_min: 88
-        port_range_max: 88
-        remote_ip_prefix: 0.0.0.0/0
-      - direction: ingress
-        ether_type: IPv4
-        protocol: tcp
-        port_range_min: 53
-        port_range_max: 53
-        remote_ip_prefix: 0.0.0.0/0
-      - direction: ingress
-        ether_type: IPv4
-        protocol: udp
-        port_range_min: 53
-        port_range_max: 53
-        remote_ip_prefix: 0.0.0.0/0
-      - direction: ingress
-        ether_type: IPv4
-        protocol: tcp
-        port_range_min: 389
-        port_range_max: 389
-        remote_ip_prefix: 0.0.0.0/0
-      - direction: ingress
-        ether_type: IPv4
-        protocol: tcp
-        port_range_min: 749
-        port_range_max: 749
-        remote_ip_prefix: 0.0.0.0/0
-      - direction: ingress
-        ether_type: IPv4
-        protocol: tcp
-        port_range_min: 22
-        port_range_max: 22
-        remote_ip_prefix: 0.0.0.0/0
-      - direction: ingress
-        ether_type: IPv4
-        protocol: tcp
-        port_range_min: 636
-        port_range_max: 636
-        remote_ip_prefix: 0.0.0.0/0
-      - direction: ingress
-        ether_type: IPv4
-        protocol: tcp
-        port_range_min: 464
-        port_range_max: 464
-        remote_ip_prefix: 0.0.0.0/0
-      - direction: ingress
-        ether_type: IPv4
-        protocol: udp
-        port_range_min: 464
-        port_range_max: 464
-        remote_ip_prefix: 0.0.0.0/0
-      - direction: ingress
-        ether_type: IPv4
-        protocol: tcp
-        port_range_min: 443
-        port_range_max: 443
-        remote_ip_prefix: 0.0.0.0/0
-  delegate_to: localhost
-  become: false
-
-- name: Verify required IPA security group rules exist (no custom filter)
-  ansible.builtin.assert:
-    that: >-
-      {{
-        security_group_rule_info.security_group_rules | selectattr('direction', 'equalto', item.direction)
-                                                      | selectattr('ether_type', 'equalto', item.ether_type)
-                                                      | selectattr('protocol', 'equalto', item.protocol)
-                                                      | selectattr('port_range_min', 'equalto', item.port_range_min)
-                                                      | selectattr('port_range_max', 'equalto', item.port_range_max)
-                                                      | selectattr('remote_ip_prefix', 'equalto', item.remote_ip_prefix)
-                                                      | list
-                                                      | length > 0
-      }}
-    fail_msg: "Missing required security group rule: {{ item | to_json }}."
-    success_msg: "Security group rule exists: {{ item | to_json }}."
-  loop: "{{ required_security_rules }}"
-  delegate_to: localhost
-  become: false
 
 - name: Verify RockyLinux distribution and version
   ansible.builtin.assert:
@@ -288,8 +183,8 @@
       - --mkhomedir
       - --setup-dns
       - --auto-reverse
-      - --forwarder={{ os_subnet_dns_nameserver_ip_default }}
-      - --forwarder={{ os_subnet_dns_nameserver_ip_fallback }}
+      - --forwarder={{ os_subnet_dns_nameservers[0] }}
+      - --forwarder={{ os_subnet_dns_nameservers[1] }}
       - --realm={{ ipa_domain | upper }}
       - --hostname={{ ipa_server_hostname }}.{{ ipa_domain }}
       - --ds-password={{ ipa_admin_password }}
@@ -419,3 +314,10 @@
       - "ipa-server: {{ ansible_facts.packages['ipa-server'][0].version }}-{{ ansible_facts.packages['ipa-server'][0].release }}"
       - "ipa-server-dns: {{ ansible_facts.packages['ipa-server-dns'][0].version }}-{{ ansible_facts.packages['ipa-server-dns'][0].release }}"
       - "bind-dyndb-ldap: {{ ansible_facts.packages['bind-dyndb-ldap'][0].version }}-{{ ansible_facts.packages['bind-dyndb-ldap'][0].release }}"
+
+- name: List verified and/or updated OpenStack resources
+  ansible.builtin.debug:
+    msg:
+      - "OpenStack Network: '{{ os_network_name }}'"
+      - "OpenStack Subnet: '{{ os_subnet_name }}'"
+      - "OpenStack Subnet DNS nameservers: ['{{ ansible_default_ipv4.address }}']"

@@ -102,11 +102,7 @@ ansible-playbook -i inventory.yml playbook.yml
 | ipa_admin_givenname | given name of the administrator to replace the default IPA admin (not necessarily a real person's name). Example: `EWC` | `string` | n/a | yes |
 | ipa_admin_surname | surname of the administrator to replace the default IPA admin (not necessarily a real person's name). Example: `IPAADMIN` | `string` | n/a | yes |
 | os_network_name | OpenStack network to which the target virtual machine has access to. Example: `private` | `string` | n/a | yes |
-| os_subnet_name | OpenStack subnet in which the target virtual machine is running. Example: `private subnet` | `string` | n/a | yes |
-| os_subnet_cidr | IP range (in CIDR format) that spans the OpenStack subnet in which the target virtual machines is running. Example: `10.0.0.0/24` | `string` |n/a  | yes |
 | os_security_group_name | OpenStack security group containing all firewall rules required by the IPA server/client communication. Example: `ipa-server-1`  | `string` | n/a | yes |
-| os_subnet_dns_nameserver_ip_default | default DNS nameserver IPV4 address registered on the OpenStack subnet where the IPA server will run. Example: `1.1.1.1` | `string` | n/a | yes |
-| os_subnet_dns_nameserver_ip_fallback | fallback DNS nameserver IPV4 address registered on the OpenStack subnet where the IPA server will run. Example: `8.8.8.8` | `string` | n/a  | yes |
 
 
 ## SW Bill of Materials (SBoM)
