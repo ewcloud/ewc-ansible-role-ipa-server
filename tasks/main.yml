@@ -57,7 +57,7 @@
 - name: Verify chosen subnet has at least two DNS nameservers set
   ansible.builtin.assert:
     that:
-      - os_subnet_dns_nameservers | length > 1
+      - os_subnet_dns_nameservers | length > 0
     fail_msg: "Subnet '{{ os_subnet_name }}' has no DNS nameservers configured"
     success_msg: "The following DNS nameservers are set in subnet '{{ os_subnet_name }}': {{ os_subnet_dns_nameservers }}"
 
@@ -181,7 +181,7 @@
       - --setup-dns
       - --auto-reverse
       - --forwarder={{ os_subnet_dns_nameservers[0] }}
-      - --forwarder={{ os_subnet_dns_nameservers[1] }}
+      - --forwarder={{ os_subnet_dns_nameservers[1] | default(omit) }}
       - --realm={{ ipa_domain | upper }}
       - --hostname={{ ipa_server_hostname }}.{{ ipa_domain }}
       - --ds-password={{ ipa_admin_password }}
@@ -204,13 +204,27 @@
     state: stopped
     enabled: false
 
-- name: Authenticate as IPA admin with Kerberos
-  ansible.builtin.command:
-    cmd: bash -c "echo '{{ ipa_admin_password }}' | kinit admin"
-  register: kinit_result
-  failed_when: kinit_result.rc != 0
-  changed_when: false
+- name: Check if default IPA admin account is still enabled
+  community.general.ipa_user:
+    ipa_pass: "{{ ipa_admin_password }}"
+    ipa_host: "{{ ipa_server_hostname }}.{{ ipa_domain }}"
+    uid: admin
+  register: default_admin
+  failed_when: false
   no_log: true
+
+- name: Check if user-defined IPA admin account exists
+  community.general.ipa_user:
+    ipa_pass: "{{ ipa_admin_password }}"
+    ipa_host: "{{ ipa_server_hostname }}.{{ ipa_domain }}"
+    uid: "{{ ipa_admin_username }}"
+  register: user_defined_admin
+  failed_when: false
+  no_log: true
+
+- name: Set flag for tasks conditioned to successful completion of first configuration
+  ansible.builtin.set_fact:
+    is_initial_configuration: "{{ ('HTTP Error 401' not in default_admin.msg) and ('HTTP Error 401' in user_defined_admin.msg) }}"
 
 - name: Add new user-defined IPA admin
   community.general.ipa_user:
@@ -221,15 +235,9 @@
     ipa_pass: "{{ ipa_admin_password }}"
     ipa_host: "{{ ipa_server_hostname }}.{{ ipa_domain }}"
     state: present
+  when: is_initial_configuration
   register: ipa_user_result
   no_log: true
-
-- name: Elevate new user-defined admin to super user on IPA server itself
-  ansible.builtin.lineinfile:
-    path: /etc/sudoers
-    line: "{{ ipa_admin_username }} ALL=(ALL) ALL"
-    validate: 'visudo -cf %s'
-    state: present
 
 - name: Create IPA sudo rule
   community.general.ipa_sudorule:
@@ -243,6 +251,7 @@
     runasusercategory: all
     runasgroupcategory: all
     state: present
+  when: is_initial_configuration
   register: ipa_sudorule_result
   no_log: true
 
@@ -254,6 +263,7 @@
     user: "{{ ipa_admin_username }}"
     append: true
     state: present
+  when: is_initial_configuration
   register: ipa_group_admins_result
   no_log: true
 
@@ -265,6 +275,7 @@
     user: "{{ ipa_admin_username }}"
     append: true
     state: present
+  when: is_initial_configuration
   register: ipa_group_trust_admins_result
   no_log: true
 
@@ -275,6 +286,7 @@
     uid: "{{ ipa_admin_username }}"
     krbpasswordexpiration: 19700101000000
     state: present
+  when: is_initial_configuration
   register: ipa_user_mod_result
   no_log: true
 
@@ -284,6 +296,7 @@
     ipa_host: "{{ ipa_server_hostname }}.{{ ipa_domain }}"
     uid: admin
     state: disabled
+  when: is_initial_configuration
   register: ipa_admin_disable_result
   no_log: true
 
