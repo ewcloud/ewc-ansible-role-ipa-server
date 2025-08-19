@@ -202,6 +202,7 @@
     ipa_pass: "{{ ipa_admin_password }}"
     ipa_host: "{{ ipa_server_hostname }}.{{ ipa_domain }}"
     uid: admin
+    state: present
   register: default_admin
   failed_when: false
   no_log: true
@@ -211,13 +212,14 @@
     ipa_pass: "{{ ipa_admin_password }}"
     ipa_host: "{{ ipa_server_hostname }}.{{ ipa_domain }}"
     uid: "{{ ipa_admin_username }}"
+    state: present
   register: user_defined_admin
   failed_when: false
   no_log: true
 
 - name: Set flag for tasks conditioned to successful completion of first configuration
   ansible.builtin.set_fact:
-    is_initial_configuration: "{{ ('HTTP Error 401' not in default_admin.msg) and ('HTTP Error 401' in user_defined_admin.msg) }}"
+    is_initial_configuration: "{{ default_admin.get('user', []) | length > 0 and 'is required' in user_defined_admin.get('msg', '') }}"
 
 - name: Add new user-defined IPA admin
   community.general.ipa_user:
