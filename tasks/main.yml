@@ -80,8 +80,8 @@
   ansible.builtin.assert:
     that:
       - ansible_facts['distribution'] == 'Rocky'
-      - ansible_facts['distribution_version'] in ['8.10', '9.6']
-    fail_msg: "Supports RockyLinux versions 8.10 or 9.6. Detected: {{ ansible_facts['distribution'] }} {{ ansible_facts['distribution_version'] }}."
+      - ansible_facts['distribution_version'] in ['8.10', '9.5']
+    fail_msg: "Supports RockyLinux versions 8.10 or 9.5. Detected: {{ ansible_facts['distribution'] }} {{ ansible_facts['distribution_version'] }}."
     success_msg: "Running on RockyLinux {{ ansible_facts['distribution_version'] }}."
 
 - name: Pin package versions prior to installation
