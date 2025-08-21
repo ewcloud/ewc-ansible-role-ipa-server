@@ -325,3 +325,4 @@
       - "OpenStack Network: '{{ os_network_name }}'"
       - "OpenStack Subnet: '{{ os_subnet_name }}'"
       - "OpenStack Subnet DNS nameservers: ['{{ ansible_default_ipv4.address }}']"
+      - "OpenStack Security Group: '{{ os_security_group_name }}'"
