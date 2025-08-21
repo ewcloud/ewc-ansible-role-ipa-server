@@ -122,8 +122,8 @@ The following components will be included in the resulting environment:
 
 | Component | Version | License | Home URL |
 |------|---------|---------|--------------|
-| ipa-server | 4.12 | GPLv3+ | http://www.freeipa.org/ |
-| ipa-server-dns | 4.12 | GPLv3+ | http://www.freeipa.org/ |
+| ipa-server | 4.12 | GPLv3+ | http://www.freeipa.org |
+| ipa-server-dns | 4.12 | GPLv3+ | http://www.freeipa.org |
 | bind-dyndb-ldap | 11.11 | GPLv2+ | https://releases.pagure.org/bind-dyndb-ldap |
 
 ## Changelog
