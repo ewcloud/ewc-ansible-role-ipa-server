@@ -3,6 +3,13 @@
 All notable changes to this project are documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.1.0](https://github.com/ewcloud/ewc-ansible-role-ipa-server/compare/1.0.0...1.1.0) (2025-12-03)
+
+
+### Features
+
+* Automated patch rollout and test automation support ([#2](https://github.com/ewcloud/ewc-ansible-role-ipa-server/issues/2)) ([f1c7d2d](https://github.com/ewcloud/ewc-ansible-role-ipa-server/commit/f1c7d2d5fa4c0d9b39477886713b47a4209c8ccb))
+
 # 1.0.0 (2025-09-05)
 
 
