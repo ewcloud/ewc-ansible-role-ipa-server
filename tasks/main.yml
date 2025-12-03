@@ -80,8 +80,8 @@
   ansible.builtin.assert:
     that:
       - ansible_facts['distribution'] == 'Rocky'
-      - ansible_facts['distribution_major_version'] in ['8', '9']
-    fail_msg: "Supports RockyLinux versions 8 or 9. Detected: {{ ansible_facts['distribution'] }} {{ ansible_facts['distribution_major_version'] }}."
+      - ansible_facts['distribution_major_version'] in ['8']
+    fail_msg: "Supports RockyLinux version 8. Detected: {{ ansible_facts['distribution'] }} {{ ansible_facts['distribution_major_version'] }}."
     success_msg: "Running on RockyLinux {{ ansible_facts['distribution_major_version'] }}."
 
 - name: Enable Red Hat Enterprise Linux Identity Management system module on RockyLinux 8
@@ -153,7 +153,7 @@
 
 - name: Configure DNS server in NetworkManager
   community.general.nmcli:
-    conn_name: '{{ ansible_facts["default_ipv4"]["interface"] }}}'
+    conn_name: '{{ ansible_facts["default_ipv4"]["interface"] }}'
     type: ethernet
     dns4:
       - "127.0.0.1"
