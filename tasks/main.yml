@@ -80,21 +80,9 @@
   ansible.builtin.assert:
     that:
       - ansible_facts['distribution'] == 'Rocky'
-      - ansible_facts['distribution_version'] in ['8.10', '9.5']
-    fail_msg: "Supports RockyLinux versions 8.10 or 9.5. Detected: {{ ansible_facts['distribution'] }} {{ ansible_facts['distribution_version'] }}."
-    success_msg: "Running on RockyLinux {{ ansible_facts['distribution_version'] }}."
-
-- name: Pin package versions prior to installation
-  ansible.builtin.set_fact:
-    package_versions:
-      rockylinux_8:
-        ipa-server: "ipa-server-4.9.13-18.module+el8.10.0+2000+979bf254"
-        ipa-server-dns: "ipa-server-dns-4.9.13-18.module+el8.10.0+2000+979bf254"
-        bind-dyndb-ldap: "bind-dyndb-ldap-11.6-6.module+el8.10.0+1960+1ed527b3"
-      rockylinux_9:
-        ipa-server: "ipa-server-4.12.2-14.el9_6.1"
-        ipa-server-dns: "ipa-server-dns-4.12.2-14.el9_6.1"
-        bind-dyndb-ldap: "bind-dyndb-ldap-11.11-3.el9_6"
+      - ansible_facts['distribution_major_version'] in ['8']
+    fail_msg: "Supports RockyLinux version 8. Detected: {{ ansible_facts['distribution'] }} {{ ansible_facts['distribution_major_version'] }}."
+    success_msg: "Running on RockyLinux {{ ansible_facts['distribution_major_version'] }}."
 
 - name: Enable Red Hat Enterprise Linux Identity Management system module on RockyLinux 8
   ansible.builtin.dnf:
@@ -108,11 +96,11 @@
     name:
       - "{{ item }}"
     state: present
-    allow_downgrade: true
+    allow_downgrade: false
   loop:
-    - "{{ package_versions['rockylinux_' + ansible_facts['distribution_major_version']]['ipa-server'] }}"
-    - "{{ package_versions['rockylinux_' + ansible_facts['distribution_major_version']]['ipa-server-dns'] }}"
-    - "{{ package_versions['rockylinux_' + ansible_facts['distribution_major_version']]['bind-dyndb-ldap'] }}"
+    - ipa-server
+    - ipa-server-dns
+    - bind-dyndb-ldap
 
 - name: SSH - Disallow root SSH access
   ansible.builtin.lineinfile:
@@ -121,6 +109,19 @@
     line: "PermitRootLogin no"
     state: present
   notify: Restart sshd
+
+- name: Dnf-automatic - Configure upgrade_type
+  ansible.builtin.lineinfile:
+    path: /etc/dnf/automatic.conf
+    regexp: "^upgrade_type "
+    line: "upgrade_type = security"
+    state: present
+
+- name: Dnf-automatic - Configure apply_updates
+  ansible.builtin.lineinfile:
+    path: /etc/dnf/automatic.conf
+    regexp: "^apply_updates "
+    line: "apply_updates = yes"
 
 - name: SElinux - Set permissive mode
   ansible.posix.selinux:
@@ -145,14 +146,14 @@
 - name: Add server /etc/hosts
   ansible.builtin.lineinfile:
     path: /etc/hosts
-    regexp: '^{{ ansible_default_ipv4.address }}'
-    line: '{{ ansible_default_ipv4.address }} {{ ipa_server_hostname }}.{{ ipa_domain }}'
+    regexp: '^{{ ansible_facts["default_ipv4"]["address"] }}'
+    line: '{{ ansible_facts["default_ipv4"]["address"] }} {{ ipa_server_hostname }}.{{ ipa_domain }}'
     insertafter: BOF
     state: present
 
 - name: Configure DNS server in NetworkManager
   community.general.nmcli:
-    conn_name: "{{ ansible_default_ipv4.interface }}"
+    conn_name: '{{ ansible_facts["default_ipv4"]["interface"] }}'
     type: ethernet
     dns4:
       - "127.0.0.1"
@@ -295,18 +296,10 @@
   register: ipa_admin_disable_result
   no_log: true
 
-- name: Point DNS nameservers in OpenStack subnet to new IPA server
-  openstack.cloud.subnet:
-    name: "{{ os_subnet_name }}"
-    network: "{{ os_network_name }}"
-    cidr: "{{ os_subnet_cidr }}"
-    dns_nameservers:
-      - "{{ ansible_default_ipv4.address }}"
-    state: present
-  register: subnet_result
-  delegate_to: localhost
-  become: false
-  no_log: true
+- name: Dnf-automatic - Enabled and started
+  ansible.builtin.systemd:
+    name: dnf-automatic.timer
+    enabled: true
 
 - name: Gather package facts
   ansible.builtin.package_facts:
@@ -319,10 +312,25 @@
       - "ipa-server-dns: {{ ansible_facts.packages['ipa-server-dns'][0].version }}-{{ ansible_facts.packages['ipa-server-dns'][0].release }}"
       - "bind-dyndb-ldap: {{ ansible_facts.packages['bind-dyndb-ldap'][0].version }}-{{ ansible_facts.packages['bind-dyndb-ldap'][0].release }}"
 
-- name: List verified and/or updated OpenStack resources
+- name: List verified OpenStack resources
   ansible.builtin.debug:
     msg:
       - "OpenStack Network: '{{ os_network_name }}'"
       - "OpenStack Subnet: '{{ os_subnet_name }}'"
-      - "OpenStack Subnet DNS nameservers: ['{{ ansible_default_ipv4.address }}']"
+      - "OpenStack Subnet DNS nameservers: '{{ subnets_info.subnets[0].dns_nameservers }}'"
       - "OpenStack Security Group: '{{ os_security_group_name }}'"
+
+- name: Temporary setup Trivy for SBOM auto-generation (standalone binary file at /tmp/trivy)
+  ansible.builtin.shell:
+    cmd: |
+      set -o pipefail
+      curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /tmp
+    creates: /tmp/trivy
+  args:
+    executable: /bin/bash
+
+- name: Auto-generate SBOM (SPDX file at /sbom.json)
+  ansible.builtin.command:
+    cmd: ./trivy rootfs --pkg-types os --format spdx-json --output /sbom.json --scanners vuln /
+    chdir: /tmp
+  changed_when: true

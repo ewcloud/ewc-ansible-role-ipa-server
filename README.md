@@ -6,15 +6,12 @@ to customize your environment in the
 [European Weather Cloud (EWC)](https://europeanweather.cloud/).
 The template is designed to:
 * Validate that network/subnet configuration in the EWC tenancy
-* Configure a pre-existing virtual machine running RockyLinux version 8 or 9,
+* Configure a pre-existing virtual machine running RockyLinux version 8,
 and with a minimum recommended 4GB of RAM, such that it:
   * Provides DNS resolutions for discovery of resources (i.e. other virtual
   machines)
   * Enables centralized user and credentials creation/edition/deletion/authentication
   * Allows centralized authorization between users and resources
-* Automatically update the underlying subnet DNS nameserver to point to the
-newly configured IPA server
-
 
 ## Copyright and License
 Copyright © EUMETSAT 2025.
@@ -104,27 +101,15 @@ ansible-playbook -i inventory.yml playbook.yml
 | os_network_name | OpenStack network to which the target virtual machine has access to. Example: `private` | `string` | n/a | yes |
 | os_security_group_name | OpenStack security group containing all firewall rules required by the IPA server/client communication. Example: `ipa` | `string` | n/a | yes |
 
-## SW Bill of Materials (SBoM)
-
+## Dependencies
+> 💡 Upon execution, a SBOM (SPDX format) is auto-generated and stored in the VM's file system root directory (see `/sbom.json`).
 Third-party components used in the resulting environment.
 
-### RockyLinux 8.10 Environment
-The following components will be included in the resulting environment:
-
-| Component | Version | License | Home URL |
-|------|---------|---------|--------------|
-| ipa-server | 4.9 | GPLv3+ | http://www.freeipa.org |
-| ipa-server-dns | 4.9 | GPLv3+ | http://www.freeipa.org |
-| bind-dyndb-ldap | 11.6 | GPLv2+ | https://releases.pagure.org/bind-dyndb-ldap |
-
-### RockyLinux 9.5 Environment
-The following components will be included in the resulting environment:
-
-| Component | Version | License | Home URL |
-|------|---------|---------|--------------|
-| ipa-server | 4.12 | GPLv3+ | http://www.freeipa.org |
-| ipa-server-dns | 4.12 | GPLv3+ | http://www.freeipa.org |
-| bind-dyndb-ldap | 11.11 | GPLv2+ | https://releases.pagure.org/bind-dyndb-ldap |
+| Component |  Home URL |
+|------|---------|
+| ipa-server |  http://www.freeipa.org |
+| ipa-server-dns | http://www.freeipa.org |
+| bind-dyndb-ldap | https://releases.pagure.org/bind-dyndb-ldap |
 
 ## Changelog
 All notable changes (i.e. fixes, features and breaking changes) are documented 
