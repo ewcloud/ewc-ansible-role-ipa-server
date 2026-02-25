@@ -3,6 +3,13 @@
 All notable changes to this project are documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.1](https://github.com/ewcloud/ewc-ansible-role-ipa-server/compare/1.1.0...1.1.1) (2026-02-25)
+
+
+### Bug Fixes
+
+* Rocky 9 support ([#3](https://github.com/ewcloud/ewc-ansible-role-ipa-server/issues/3)) ([b1e6199](https://github.com/ewcloud/ewc-ansible-role-ipa-server/commit/b1e6199ddf9cad2f348c1ac0c68b3be163412f18))
+
 # [1.1.0](https://github.com/ewcloud/ewc-ansible-role-ipa-server/compare/1.0.0...1.1.0) (2025-12-03)
 
 
