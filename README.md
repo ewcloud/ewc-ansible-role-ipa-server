@@ -6,7 +6,7 @@ to customize your environment in the
 [European Weather Cloud (EWC)](https://europeanweather.cloud/).
 The template is designed to:
 * Validate that network/subnet configuration in the EWC tenancy
-* Configure a pre-existing virtual machine running RockyLinux version 8,
+* Configure a pre-existing virtual machine running RockyLinux version 8 or 9,
 and with a minimum recommended 4GB of RAM, such that it:
   * Provides DNS resolutions for discovery of resources (i.e. other virtual
   machines)
