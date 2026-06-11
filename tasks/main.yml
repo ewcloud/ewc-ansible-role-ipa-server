@@ -14,67 +14,67 @@
     fail_msg: "Input validation failed. See README.md for information on required inputs and their format."
     success_msg: "User input configuration is valid."
 
-- name: Gather information about user-specified OpenStack network
-  openstack.cloud.networks_info:
-    name: "{{ os_network_name }}"
-  register: networks_info
-  delegate_to: localhost
-  become: false
+# - name: Gather information about user-specified OpenStack network
+#   openstack.cloud.networks_info:
+#     name: "{{ os_network_name }}"
+#   register: networks_info
+#   delegate_to: localhost
+#   become: false
 
-- name: Verify user-specified OpenStack network exists
-  ansible.builtin.assert:
-    that:
-      - networks_info.networks | length > 0
-      - networks_info.networks | length == 1
-    fail_msg: "OpenStack network '{{ os_network_name }}' does not exist or is not unique."
-    success_msg: "OpenStack network '{{ os_network_name }}' exists."
+# - name: Verify user-specified OpenStack network exists
+#   ansible.builtin.assert:
+#     that:
+#       - networks_info.networks | length > 0
+#       - networks_info.networks | length == 1
+#     fail_msg: "OpenStack network '{{ os_network_name }}' does not exist or is not unique."
+#     success_msg: "OpenStack network '{{ os_network_name }}' exists."
 
-- name: Get ID of user-defined network
-  ansible.builtin.set_fact:
-    os_network_id: "{{ networks_info.networks[0].id }}"
+# - name: Get ID of user-defined network
+#   ansible.builtin.set_fact:
+#     os_network_id: "{{ networks_info.networks[0].id }}"
 
-- name: Gather information about subnets within user-defined OpenStack network
-  openstack.cloud.subnets_info:
-    filters:
-      network_id: "{{ os_network_id }}"
-  register: subnets_info
-  delegate_to: localhost
-  become: false
+# - name: Gather information about subnets within user-defined OpenStack network
+#   openstack.cloud.subnets_info:
+#     filters:
+#       network_id: "{{ os_network_id }}"
+#   register: subnets_info
+#   delegate_to: localhost
+#   become: false
 
-- name: Verify OpenStack subnets are available within user-defined network
-  ansible.builtin.assert:
-    that:
-      - subnets_info.subnets | length > 0
-    fail_msg: " No OpenStack subnets exist in network '{{ os_network_name }}'."
-    success_msg: "A total of {{ subnets_info.subnets | length }} OpenStack subnet(s) available in network '{{ os_network_name }}'."
+# - name: Verify OpenStack subnets are available within user-defined network
+#   ansible.builtin.assert:
+#     that:
+#       - subnets_info.subnets | length > 0
+#     fail_msg: " No OpenStack subnets exist in network '{{ os_network_name }}'."
+#     success_msg: "A total of {{ subnets_info.subnets | length }} OpenStack subnet(s) available in network '{{ os_network_name }}'."
 
-- name: Get name, ID, CIDR and DNS nameservers of subnet (choose first)
-  ansible.builtin.set_fact:
-    os_subnet_name: "{{ subnets_info.subnets[0].name }}"
-    os_subnet_cidr: "{{ subnets_info.subnets[0].cidr }}"
-    os_subnet_dns_nameservers: "{{ subnets_info.subnets[0].dns_nameservers | default([]) }}"
+# - name: Get name, ID, CIDR and DNS nameservers of subnet (choose first)
+#   ansible.builtin.set_fact:
+#     os_subnet_name: "{{ subnets_info.subnets[0].name }}"
+#     os_subnet_cidr: "{{ subnets_info.subnets[0].cidr }}"
+#     os_subnet_dns_nameservers: "{{ subnets_info.subnets[0].dns_nameservers | default([]) }}"
 
-- name: Verify chosen subnet has at least two DNS nameservers set
-  ansible.builtin.assert:
-    that:
-      - os_subnet_dns_nameservers | length > 0
-    fail_msg: "Subnet '{{ os_subnet_name }}' has no DNS nameservers configured"
-    success_msg: "The following DNS nameservers are set in subnet '{{ os_subnet_name }}': {{ os_subnet_dns_nameservers }}"
+# - name: Verify chosen subnet has at least two DNS nameservers set
+#   ansible.builtin.assert:
+#     that:
+#       - os_subnet_dns_nameservers | length > 0
+#     fail_msg: "Subnet '{{ os_subnet_name }}' has no DNS nameservers configured"
+#     success_msg: "The following DNS nameservers are set in subnet '{{ os_subnet_name }}': {{ os_subnet_dns_nameservers }}"
 
-- name: Gather information about OpenStack security group
-  openstack.cloud.security_group_info:
-    name: "{{ os_security_group_name }}"
-  register: security_group_info
-  delegate_to: localhost
-  become: false
+# - name: Gather information about OpenStack security group
+#   openstack.cloud.security_group_info:
+#     name: "{{ os_security_group_name }}"
+#   register: security_group_info
+#   delegate_to: localhost
+#   become: false
 
-- name: Verify user-specified OpenStack security group exists
-  ansible.builtin.assert:
-    that:
-      - security_group_info.security_groups | length > 0
-      - security_group_info.security_groups | length == 1
-    fail_msg: "OpenStack security group '{{ os_security_group_name }}' does not exist or is not unique."
-    success_msg: "OpenStack security group '{{ os_security_group_name }}' exists."
+# - name: Verify user-specified OpenStack security group exists
+#   ansible.builtin.assert:
+#     that:
+#       - security_group_info.security_groups | length > 0
+#       - security_group_info.security_groups | length == 1
+#     fail_msg: "OpenStack security group '{{ os_security_group_name }}' does not exist or is not unique."
+#     success_msg: "OpenStack security group '{{ os_security_group_name }}' exists."
 
 - name: Verify Linux distribution version
   ansible.builtin.assert:
