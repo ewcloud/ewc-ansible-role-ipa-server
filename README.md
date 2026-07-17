@@ -27,13 +27,6 @@ all third-party components included in the environment.
 
 Contact [EUMETSAT](http://www.eumetsat.int) for details on the usage and distribution terms.
 
-## Authentication
-
-Before proceeding, if you lack OpenStack Application Credentials or do not know
-how to make them available to Ansible in your development environment, make sure
-to check out the 
-[EWC documentation](https://confluence.ecmwf.int/display/EWCLOUDKB/EWC+-+How+to+request+Openstack+Application+Credentials).
-
 ## Usage
 
 The step-by-step described below assume your local file system follows the 
@@ -98,8 +91,6 @@ ansible-playbook -i inventory.yml playbook.yml
 | ipa_admin_password | password of administrator account to replace the default IPA admin (at least 8 characters long). Example: `my-secret-password` | `string` | n/a | yes |
 | ipa_admin_givenname | given name of the administrator to replace the default IPA admin (not necessarily a real person's name). Example: `EWC` | `string` | n/a | yes |
 | ipa_admin_surname | surname of the administrator to replace the default IPA admin (not necessarily a real person's name). Example: `IPAADMIN` | `string` | n/a | yes |
-| os_network_name | OpenStack network to which the target virtual machine has access to. Example: `private` | `string` | n/a | yes |
-| os_security_group_name | OpenStack security group containing all firewall rules required by the IPA server/client communication. Example: `ipa` | `string` | n/a | yes |
 
 ## Dependencies
 > 💡 Upon execution, a SBOM (SPDX format) is auto-generated and stored in the VM's file system root directory (see `/sbom.json`).
