@@ -3,6 +3,13 @@
 All notable changes to this project are documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.2](https://github.com/ewcloud/ewc-ansible-role-ipa-server/compare/1.1.1...1.1.2) (2026-07-17)
+
+
+### Bug Fixes
+
+* Remove openstack infra validation for compatibility with ewccli ([#6](https://github.com/ewcloud/ewc-ansible-role-ipa-server/issues/6)) ([8d07e6f](https://github.com/ewcloud/ewc-ansible-role-ipa-server/commit/8d07e6fa53bad0fc067534f62d28f052470fce2d))
+
 ## [1.1.1](https://github.com/ewcloud/ewc-ansible-role-ipa-server/compare/1.1.0...1.1.1) (2026-02-25)
 
 
