@@ -96,43 +96,73 @@
     state: present
   notify: Reload NetworkManager
 
-- name: Check if FreeIPA is already installed
+- name: Firewalld - Disabled and stopped
+  ansible.builtin.service:
+    name: firewalld
+    state: stopped
+    enabled: false
+
+- name: Check if FreeIPA is already configured
   ansible.builtin.stat:
     path: /etc/ipa/default.conf
   register: ipa_config_stat
 
-- name: Install and configure the IPA server
-  ansible.builtin.command:
-    argv:
-      - ipa-server-install
-      - --unattended
-      - --domain={{ ipa_domain }}
-      - --mkhomedir
-      - --setup-dns
-      - --auto-reverse
-      - --forwarder=8.8.8.8
-      - --forwarder=1.1.1.1
-      - --realm={{ ipa_domain | upper }}
-      - --hostname={{ ipa_server_hostname }}.{{ ipa_domain }}
-      - --ds-password={{ ipa_admin_password }}
-      - --admin-password={{ ipa_admin_password }}
+- name: Raise FreeIPA installer startup timeout
+  ansible.builtin.copy:
+    dest: /etc/ipa/installer.conf
+    content: |
+      [global]
+      startup_timeout = 600
+    mode: '0644'
+  when: not ipa_config_stat.stat.exists
+
+- name: Configure the IPA server
+  ansible.builtin.shell: |
+    set -o pipefail
+    ipa-server-install \
+      --unattended \
+      --domain={{ ipa_domain }} \
+      --mkhomedir \
+      --setup-dns \
+      --auto-reverse \
+      --forwarder=8.8.8.8 \
+      --forwarder=1.1.1.1 \
+      --realm={{ ipa_domain | upper }} \
+      --hostname={{ ipa_server_hostname }}.{{ ipa_domain }} \
+      --ds-password={{ ipa_admin_password }} \
+      --admin-password={{ ipa_admin_password }}
+  args:
+    executable: /bin/bash
     creates: /etc/ipa/default.conf
   when: not ipa_config_stat.stat.exists
-  register: ipa_install_result
-  failed_when: ipa_install_result.rc != 0 and 'already installed' not in ipa_install_result.stderr
+  register: ipa_server_config
+  async: 600
+  poll: 30
   no_log: true
+
+- name: Fail if IPA server installation did not succeed
+  ansible.builtin.assert:
+    that:
+      - ipa_server_config is succeeded
+      - ipa_server_config.rc == 0
+    fail_msg: >-
+      ipa-server-install failed (rc={{ ipa_server_config.rc | default('unknown') }}).
+      Check /var/log/ipaserver-install.log on the target host.
+    success_msg: "ipa-server-install completed successfully"
+  when: not ipa_config_stat.stat.exists
+
+- name: IPA services - Logs verified
+  ansible.builtin.command:
+    cmd: grep -q -- "The ipa-server-install command was successful" "/var/log/ipaserver-install.log"
+  register: substring_check
+  failed_when: substring_check.rc != 0
+  changed_when: false
 
 - name: IPA services - Enabled and started
   ansible.builtin.systemd:
     name: ipa
     enabled: true
     state: started
-
-- name: Firewalld - Disabled and stopped
-  ansible.builtin.service:
-    name: firewalld
-    state: stopped
-    enabled: false
 
 - name: Check if default IPA admin account is still enabled
   community.general.ipa_user:
@@ -185,6 +215,9 @@
     state: present
   when: is_initial_configuration
   register: ipa_sudorule_result
+  until: ipa_sudorule_result is succeeded
+  retries: 2
+  delay: 30
   no_log: true
 
 - name: Include the new user-defined IPA admin in admins group
@@ -209,6 +242,9 @@
     state: present
   when: is_initial_configuration
   register: ipa_group_trust_admins_result
+  until: ipa_group_trust_admins_result is succeeded
+  retries: 2
+  delay: 30
   no_log: true
 
 - name: Set user-defined IPA admin password expire date as start of Unix Time (e.g. no expiration)
