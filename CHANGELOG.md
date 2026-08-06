@@ -3,6 +3,13 @@
 All notable changes to this project are documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.3](https://github.com/ewcloud/ewc-ansible-role-ipa-server/compare/1.1.2...1.1.3) (2026-08-06)
+
+
+### Bug Fixes
+
+* Timeouts, polling and retry for long-winded configuration ([#8](https://github.com/ewcloud/ewc-ansible-role-ipa-server/issues/8)) ([2c040b3](https://github.com/ewcloud/ewc-ansible-role-ipa-server/commit/2c040b3770ccb4996e11afa02c840628785adb43))
+
 ## [1.1.2](https://github.com/ewcloud/ewc-ansible-role-ipa-server/compare/1.1.1...1.1.2) (2026-07-17)
 
 
